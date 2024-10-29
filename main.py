@@ -58,8 +58,13 @@ rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 # Streamlit Interface
 st.title("DIU Admission Help Bot")
 
-# User input box for questions
-user_question = st.text_input("Ask a question about the waiver or admission:")
+# Initialize session state for user input
+if "user_question" not in st.session_state:
+    st.session_state["user_question"] = ""
+
+# User input box with session state to control value
+user_question = st.text_input("Ask a question about the waiver or admission:", 
+                              value=st.session_state["user_question"])
 
 # If a question is asked, generate the response
 if user_question:
@@ -67,3 +72,6 @@ if user_question:
         response = rag_chain.invoke({"input": user_question})
         answer = response['answer']
         st.write("**Response:**", answer)
+        
+        # Clear the input box by resetting the session state
+        st.session_state["user_question"] = ""
